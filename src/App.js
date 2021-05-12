@@ -1,5 +1,7 @@
 import './App.css'; // APP이라는 컴포넌트의 디자인은 App.js 안에 넣는다는 의미.
 import React, { Component } from 'react';
+import TOC from './Component/TOC';
+import Content from './Component/Subject';
 
 /*
 컴포넌트를 만드는 가장 기본 코드
@@ -7,12 +9,26 @@ React의 Component를 상속하여 클래스를 만듬
 이렇게 만든 클래스는 render라는 메서드를 가짐.
 */
 class App extends Component {
+  // 컴포넌트가 실행되기 전에 constructor라는 함수가 제일 먼저 실행되서 초기화를 담당한다.
+  constructor(props){
+    super(props);
+    this.state = {
+      subject:{title:'WEB', sub:'WWW!!!!'},
+      contents:[
+        {id:1, title:'HTML', desc:'HTML!!'},
+        {id:2, title:'CSS', desc:'CSS!!'},
+        {id:3, title:'Javascript', desc:'javascript!!'}
+      ]
+    }
+  }
   render() {
     return (
       <div className="App">
-        <Subject title="WEB" sub="www!!!"></Subject>
+        <Subject 
+          title={this.state.subject.title} sub={this.state.subject.sub}> 
+        </Subject>
         <Subject title="REACT" sub="RRRRR"></Subject>
-        <TOC></TOC>
+        <TOC data={this.state.contents}></TOC>
         <Content title="HTML" desc="string~~"></Content>
       </div>
     );
@@ -35,28 +51,5 @@ class Subject extends Component{
   }
 } 
 
-class TOC extends Component{
-  render(){
-    return(
-      <nav>
-            <ul>
-                <li><a href="1.html">HTML</a></li>
-                <li><a href="2.html">CSS</a></li>
-                <li><a href="3.html">Javascript</a></li>
-            </ul>
-        </nav>
-    );
-  }
-}
 
-class Content extends Component{
-  render(){
-    return(
-      <article>
-            <h2>{this.props.title}</h2>
-            {this.props.desc}
-        </article>
-    );
-  }
-}
 export default App;
