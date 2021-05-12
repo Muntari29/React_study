@@ -10,9 +10,10 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <Subject></Subject>
+        <Subject title="WEB" sub="www!!!"></Subject>
+        <Subject title="REACT" sub="RRRRR"></Subject>
         <TOC></TOC>
-        <Content></Content>
+        <Content title="HTML" desc="string~~"></Content>
       </div>
     );
   }
@@ -22,12 +23,13 @@ class App extends Component {
  페이스북에서 만든 컴퓨터언어 jsx이다.
  우리가 jsx로 작성하면 react가 자바스크립트 코드로 매핑해준다 이해하자
 */
+// HTML에서의 속성은 attribute라고 하고, React에서는 Props라 부른다.
 class Subject extends Component{
   render(){
     return (
       <header>
-            <h1>WEB</h1>
-            world wide web!
+            <h1>{this.props.title}</h1>
+            {this.props.sub}
       </header>
     );
   }
@@ -51,8 +53,8 @@ class Content extends Component{
   render(){
     return(
       <article>
-            <h2>HTML</h2>
-            HTML tttttt
+            <h2>{this.props.title}</h2>
+            {this.props.desc}
         </article>
     );
   }
