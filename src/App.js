@@ -1,7 +1,7 @@
 import './App.css'; // APP이라는 컴포넌트의 디자인은 App.js 안에 넣는다는 의미.
 import React, { Component } from 'react';
 import TOC from './Component/TOC';
-import Content from './Component/Subject';
+import Content from './Component/Content';
 
 /*
 컴포넌트를 만드는 가장 기본 코드
@@ -13,7 +13,9 @@ class App extends Component {
   constructor(props){
     super(props);
     this.state = {
+      mode: 'Non_welcome',
       subject:{title:'WEB', sub:'WWW!!!!'},
+      welcome: {title:'welcome event', desc:'welcome event!!!!'},
       contents:[
         {id:1, title:'HTML', desc:'HTML!!'},
         {id:2, title:'CSS', desc:'CSS!!'},
@@ -22,14 +24,28 @@ class App extends Component {
     }
   }
   render() {
+    console.log('app render')
+    var _title, _desc = null;
+      if (this.state.mode === 'welcome'){
+        _title = this.state.welcome.title;
+        _desc = this.state.welcome.desc;
+      } else {
+        _title = this.state.contents[0].title;
+        _desc = this.state.contents[0].desc;
+      }
     return (
       <div className="App">
         <Subject 
-          title={this.state.subject.title} sub={this.state.subject.sub}> 
+          title={this.state.subject.title} 
+          sub={this.state.subject.sub}
+          // onChangePage 이벤트 설치
+          onChangePage={function(){
+            this.setState({mode: 'welcome'});
+          }.bind(this)}
+          > 
         </Subject>
-        <Subject title="REACT" sub="RRRRR"></Subject>
         <TOC data={this.state.contents}></TOC>
-        <Content title="HTML" desc="string~~"></Content>
+        <Content title={_title} desc={_desc}></Content>
       </div>
     );
   }
@@ -42,9 +58,14 @@ class App extends Component {
 // HTML에서의 속성은 attribute라고 하고, React에서는 Props라 부른다.
 class Subject extends Component{
   render(){
+    console.log('Subject render');
     return (
       <header>
-            <h1>{this.props.title}</h1>
+            <h1><a href="/" onClick={function(e){
+              console.log(e);
+              e.preventDefault();
+              this.props.onChangePage();
+            }.bind(this)}>{this.props.title}</a></h1>
             {this.props.sub}
       </header>
     );
