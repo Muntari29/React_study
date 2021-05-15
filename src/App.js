@@ -1,7 +1,9 @@
 import './App.css'; // APP이라는 컴포넌트의 디자인은 App.js 안에 넣는다는 의미.
 import React, { Component } from 'react';
 import TOC from './Component/TOC';
-import Content from './Component/Content';
+import ReadContent from './Component/ReadContent';
+import Control from './Component/Control';
+import CreateContent from './Component/CreateContent';
 
 /*
 컴포넌트를 만드는 가장 기본 코드
@@ -12,6 +14,8 @@ class App extends Component {
   // 컴포넌트가 실행되기 전에 constructor라는 함수가 제일 먼저 실행되서 초기화를 담당한다.
   constructor(props){
     super(props);
+    // 단순 id 지표로만 사용할 것이기에 state 안에 넣어주면 불필요한 랜딩이 발생한다.
+    this.max_content_id = 3;
     this.state = {
       mode: 'Non_welcome',
       select_content_id: 1,
@@ -26,10 +30,11 @@ class App extends Component {
   }
   render() {
     console.log('app render')
-    var _title, _desc = null;
+    var _title, _desc, _article = null;
       if (this.state.mode === 'welcome'){
         _title = this.state.welcome.title;
         _desc = this.state.welcome.desc;
+        _article = <ReadContent title={_title} desc={_desc}></ReadContent>
       } else if(this.state.mode === 'read'){
         let i = 0;
         while(i < this.state.contents.length){
@@ -41,9 +46,20 @@ class App extends Component {
           }
           i++;
         }
-      } else {
-        _title = this.state.contents[0].title;
-        _desc = this.state.contents[0].desc;
+        _article = <ReadContent title={_title} desc={_desc}></ReadContent>
+      } else if (this.state.mode === 'create'){
+        _article = <CreateContent makeOnSubmit={function(_title, _desc){
+          // 추후 성능 개선을 통해 push 대신 반드시 concat을 사용하도록하자.
+          // shouldComponentUpdate 함수와 관련되어 있다.
+          this.max_content_id = this.max_content_id + 1;
+          const _content = this.state.contents.concat(
+            {id:this.max_content_id, title:_title, desc:_desc}
+          )
+          this.setState({
+            contents:_content
+          })
+        }.bind(this)}></CreateContent>
+
       }
     return (
       <div className="App">
@@ -64,7 +80,13 @@ class App extends Component {
             });
           }.bind(this)}
           data={this.state.contents}></TOC>
-        <Content title={_title} desc={_desc}></Content>
+        <Control 
+          onChangeMode={function(_mode){
+            this.setState({
+              mode: _mode
+            });
+          }.bind(this)}></Control>
+        {_article}
       </div>
     );
   }
