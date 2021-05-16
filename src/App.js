@@ -4,6 +4,7 @@ import TOC from './Component/TOC';
 import ReadContent from './Component/ReadContent';
 import Control from './Component/Control';
 import CreateContent from './Component/CreateContent';
+import UpdateContent from './Component/UpdateContent';
 
 /*
 컴포넌트를 만드는 가장 기본 코드
@@ -28,25 +29,25 @@ class App extends Component {
       ]
     }
   }
-  render() {
-    console.log('app render')
+  getReadContent(){
+    let i = 0;
+        while(i < this.state.contents.length){
+          var data = this.state.contents[i];
+          if (data.id === this.state.select_content_id){
+            return data;
+          }
+          i++;
+        }
+  }
+  getContent(){
     var _title, _desc, _article = null;
       if (this.state.mode === 'welcome'){
         _title = this.state.welcome.title;
         _desc = this.state.welcome.desc;
         _article = <ReadContent title={_title} desc={_desc}></ReadContent>
       } else if(this.state.mode === 'read'){
-        let i = 0;
-        while(i < this.state.contents.length){
-          var data = this.state.contents[i];
-          if (data.id === this.state.select_content_id){
-            _title = data.title;
-            _desc = data.desc;
-            break;
-          }
-          i++;
-        }
-        _article = <ReadContent title={_title} desc={_desc}></ReadContent>
+        var _Read = this.getReadContent();
+        _article = <ReadContent title={_Read.title} desc={_Read.desc}></ReadContent>
       } else if (this.state.mode === 'create'){
         _article = <CreateContent makeOnSubmit={function(_title, _desc){
           // 추후 성능 개선을 통해 push 대신 반드시 concat을 사용하도록하자.
@@ -56,11 +57,34 @@ class App extends Component {
             {id:this.max_content_id, title:_title, desc:_desc}
           )
           this.setState({
-            contents:_content
+            contents:_content,
+            mode:'read',
+            select_content_id:this.max_content_id
           })
         }.bind(this)}></CreateContent>
-
+      } else if (this.state.mode === 'update'){
+        _Read = this.getReadContent();
+        _article = <UpdateContent data={_Read} makeOnSubmit={function(_id, _title, _desc){
+          // Array.from(array)로 기존 배열을 복사한 새로운 배열을 만드는 방법을 활용
+          const _content = Array.from(this.state.contents);
+          let i = 0;
+          while(i < this.state.contents.length){
+            if(_content[i].id === _id){
+              _content[i] = {id:_id, title:_title, desc:_desc};
+              break;
+            }
+            i++;
+          }
+          this.setState({
+            contents:_content,
+            mode: 'read'
+          })
+        }.bind(this)}></UpdateContent>
       }
+      return _article;
+    }
+  render() {
+    console.log('app render')
     return (
       <div className="App">
         <Subject 
@@ -86,7 +110,7 @@ class App extends Component {
               mode: _mode
             });
           }.bind(this)}></Control>
-        {_article}
+        {this.getContent()}
       </div>
     );
   }
