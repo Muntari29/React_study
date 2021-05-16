@@ -18,7 +18,7 @@ class App extends Component {
     // 단순 id 지표로만 사용할 것이기에 state 안에 넣어주면 불필요한 랜딩이 발생한다.
     this.max_content_id = 3;
     this.state = {
-      mode: 'Non_welcome',
+      mode: 'welcome',
       select_content_id: 1,
       subject:{title:'WEB', sub:'WWW!!!!'},
       welcome: {title:'welcome event', desc:'welcome event!!!!'},
@@ -106,10 +106,29 @@ class App extends Component {
           data={this.state.contents}></TOC>
         <Control 
           onChangeMode={function(_mode){
+            if (_mode === 'delete'){
+              if (window.confirm('really??')){
+                const _contents = Array.from(this.state.contents);
+                let i = 0;
+                while(i < _contents.length){
+                  if(_contents[i].id === this.state.select_content_id){
+                    _contents.splice(i,1);
+                    break;
+                  }
+                i++;
+                }
             this.setState({
-              mode: _mode
+              mode: 'welcome',
+              contents:_contents
             });
-          }.bind(this)}></Control>
+            alert('Done');
+          } else{
+            this.setState({
+              mode:_mode
+            });
+          }
+        }
+      }.bind(this)}></Control>
         {this.getContent()}
       </div>
     );
